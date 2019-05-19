@@ -1,0 +1,10 @@
+/home/artus/Projects/experimentos/rust-actix-chat-xp/target/debug/deps/libserde_derive_internals-79a1944094d67d24.rlib: /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/lib.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ast.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/attr.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ctxt.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/case.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/check.rs
+
+/home/artus/Projects/experimentos/rust-actix-chat-xp/target/debug/deps/serde_derive_internals-79a1944094d67d24.d: /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/lib.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ast.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/attr.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ctxt.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/case.rs /home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/check.rs
+
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/lib.rs:
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ast.rs:
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/attr.rs:
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/ctxt.rs:
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/case.rs:
+/home/artus/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive_internals-0.16.0/src/check.rs:
