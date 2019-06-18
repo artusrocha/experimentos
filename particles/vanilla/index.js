@@ -1,25 +1,26 @@
 const control = {
   render: false,
-  loopCount: 0
+  loopCount: 0,
+  limits: {
+    particles: 10,
+    container: {
+      x: 600,
+      y: 600
+    },
+    speed: {
+      x: 1,
+      y: 1
+    }
+  }
 }
 const containerNode = document.getElementById('container')
 const translatesStyleNode = document.getElementById('translates')
-const limits = {
-  container: {
-    x: 600,
-    y: 600
-  },
-  speed: {
-    x: 1,
-    y: 1
-  }
-}
 
 const createRandomParticleData = () => {
   return {
     coordenates: {
-      x: Math.floor(Math.random() * limits.container.x) + 1,
-      y: Math.floor(Math.random() * limits.container.y) + 1,
+      x: Math.floor(Math.random() * control.limits.container.x) + 1,
+      y: Math.floor(Math.random() * control.limits.container.y) + 1,
     },
     momentum: {
       x: [ -1, 1 ][Math.floor(Math.random() *2)],
@@ -29,7 +30,7 @@ const createRandomParticleData = () => {
   }
 }
 
-const takeSnapshot = () => {
+const takeSnapshot = (particles) => {
   const snapshot = {}
   particles.forEach( particle =>{
     const coord = particle.coordenates
@@ -60,7 +61,7 @@ const interateWithBorderByAxis = (particle, axis) => {
 //    console.log('axis: ', axis, control)
     return particle
   }
-  if ( particle.coordenates[axis] == limits.container[axis] ) {
+  if ( particle.coordenates[axis] == control.limits.container[axis] ) {
     if ( particle.momentum[axis] > 0 ) {
       particle.momentum[axis] = particle.momentum[axis] * -1
       control.render = true
@@ -88,50 +89,29 @@ const calcParticleMove = (particle) => {
   return particle
 }
 
-const ciclo = () => {
+const ciclo = (particles) => {
   control.loopCount++
-  let allParticlesSnapshot = takeSnapshot()
+  let allParticlesSnapshot = takeSnapshot(particles)
 
   particles = particles.map( particle => {
     particle = interateWithBorderByAxis(particle, 'x')
     return interateWithBorderByAxis(particle, 'y')
   }).map( particle => calcParticleMove(particle) )
-//  console.log(control)
+
   if ( control.render || control.loopCount == 5 ) {
     let translates = particles.map(particle => moveParticleCssProps(particle))
-    //setTimeout( function () {
-      doTranslates( translates )
-    //}, control.loopCount )
+    doTranslates( translates )
     control.render = false
     control.loopCount = 0
   }
-  setTimeout( function(){ ciclo() }, 1)
+  setTimeout( function(){ ciclo(particles) }, 1)
 }
 
-let particles = [
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData(),
-  createRandomParticleData()
-]
-
-const init = () => {
+const initializerParticles = () => {
+  let particles = []
+  for ( let i=0; i<control.limits.particles; i++) {
+    particles.push (createRandomParticleData())
+  }
   let translates = particles.map(particle => {
     particle = calcParticleMove(particle)
     return moveParticleCssProps(particle)
@@ -140,7 +120,9 @@ const init = () => {
   particles.forEach( particle => {
     particle.node = createParticleNode(particle.nodeId, particle.coordenates)
   })
-  //console.log(particles)
+  return particles
+}
+const init = () => {
+  ciclo( initializerParticles() )
 }
 init()
-ciclo()
