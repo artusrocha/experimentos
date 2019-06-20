@@ -1,6 +1,6 @@
 #container {
- width:300px;
- height:300px;
+ width:500px;
+ height:500px;
  margin: auto;
  box-shadow: 0px 0px 0px 1px #999;
  padding: 0px;
@@ -13,4 +13,24 @@
  border-radius:5px;
  position: absolute;
 /* transition: 100ms transform linear;  */
+}
+.particle.red {
+ box-shadow:0 0 0 3px red;
+ background: red;
+}
+.particle.blue {
+    box-shadow:0 0 0 3px blue;
+    background: blue;
+}
+.particle.pink {
+    box-shadow:0 0 0 3px palevioletred;
+    background: palevioletred;
+}
+.particle.cyan {
+    box-shadow:0 0 0 3px cyan;
+    background: cyan;
+}
+.particle.green {
+    box-shadow:0 0 0 3px green;
+    background: green;
 }

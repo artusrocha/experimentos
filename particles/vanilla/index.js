@@ -2,10 +2,10 @@ const control = {
   render: false,
   loopCount: 0,
   limits: {
-    particles: 10,
+    particles: 50,
     container: {
-      x: 300,
-      y: 300
+      x: 500,
+      y: 500
     },
     speed: {
       x: 1,
@@ -27,48 +27,48 @@ const createRandomParticleData = () => {
       y: Math.random() * [ -1, 1 ][Math.floor(Math.random() *2)],
     },
     nodeId: `p${Math.floor(Math.random() * 9999999999) + 1}`,
+    nodeClasses: [ "red", "blue", "pink", "cyan", "green", "any" ][Math.floor(Math.random() *6)]
   }
 }
 
 const takeSnapshot = (particles) => {
   const snapshot = {}
   particles.forEach( particle =>{
-    const coord = {
-      x: Math.round(particle.coordenates.x),
-      y: Math.round(particle.coordenates.y)
-    }
-    snapshot[ coord.x ] = snapshot[ coord.x ] || {}
-    snapshot[ coord.x ][ coord.y ] = snapshot[ coord.x ][ coord.y ] || []
-    snapshot[ coord.x ][ coord.y ].push( particle )
+    for( let xRadius of [-2, -1, 0, 1, 2] )
+      for( let yRadius of [-2, -1, 0, 1, 2] ) {
+        const coord = {
+          x: Math.round(particle.coordenates.x) + xRadius,
+          y: Math.round(particle.coordenates.y) + yRadius
+        }
+        snapshot[ coord.x ] = snapshot[ coord.x ] || {}
+        snapshot[ coord.x ][ coord.y ] = snapshot[ coord.x ][ coord.y ] || []
+        snapshot[ coord.x ][ coord.y ].push( particle )
+      }
   })
   return snapshot
 }
 
-const createParticleNode = (id, coordenates) => {
+const createParticleNode = (id, coordenates, classes) => {
   let node = document.createElement("div")
-//  let transform = `translate(${coordenates.x}px,${coordenates.y}px)`
-//  node.style.transform = transform
   node.classList.add("particle");
+  node.classList.add(classes)
   node.id = id
   containerNode.appendChild( node )
   return node
 }
 
 const interateWithBorderByAxis = (particle, axis) => {
-  //console.log(particle)
   if( particle.coordenates[axis] <= 1 ) {
     if ( particle.momentum[axis] < 0 ) {
       particle.momentum[axis] = particle.momentum[axis] * -1
       control.render = true
     }
-//    console.log('axis: ', axis, control)
     return particle
   }
   if ( (control.limits.container[axis] - particle.coordenates[axis]) <= 1 ) {
     if ( particle.momentum[axis] > 0 ) {
       particle.momentum[axis] = particle.momentum[axis] * -1
       control.render = true
-//      console.log('axis: ', axis, control)
     }
   }
   return particle
@@ -106,32 +106,43 @@ const ciclo = (particles) => {
   particles = particles.map( particle => interateWithOtherParticles(particle, allParticlesSnapshot) )
   .map( particle => calcParticleMove(particle) )
 
-  if ( control.render || control.loopCount == 5 ) {
+  if ( control.render || control.loopCount == 4 ) {
     let translates = particles.map(particle => moveParticleCssProps(particle))
     doTranslates( translates )
     control.render = false
     control.loopCount = 0
   }
-  setTimeout( function(){ ciclo(particles) }, 1)
+  setTimeout( function(){ ciclo(particles) }, 8)
+  return particles;
 }
 
 const interateWithOtherParticles = (particle, particlesSnapshot) => {
   particlesSnapshot[ Math.round(particle.coordenates.x) ][ Math.round(particle.coordenates.y) ]
     .filter( eachParticle => eachParticle.nodeId != particle.nodeId )
-    .forEach( eachParticle => {
-      console.log('antes',particle.momentum.x, particle.momentum.y, particle)
-      let xParticleMomentumModule = Math.abs(particle.momentum.x)
+    .forEach( otherParticle => {
+      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'x')
+      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'y')
+
+/*      let xParticleMomentumModule = Math.abs(particle.momentum.x)
       let xOtherMomentumModule = Math.abs(eachParticle.momentum.x)
       let xv = particle.coordenates.x > eachParticle.coordenates.x ? -1 : 1
       particle.momentum.x = (xParticleMomentumModule + xOtherMomentumModule) / 2 * xv
-console.log( particle.momentum.x, xParticleMomentumModule, xOtherMomentumModule, xv)      
+
       let yParticleMomentumModule = Math.abs(particle.momentum.y)
       let yOtherMomentumModule = Math.abs(eachParticle.momentum.y)
       let yv = particle.coordenates.y > eachParticle.coordenates.y ? -1 : 1
-      particle.momentum.y = (yParticleMomentumModule + yOtherMomentumModule) / 2 * yv
-      console.log('depois',particle.momentum.x, particle.momentum.y, particle)
-      
+      particle.momentum.y = (yParticleMomentumModule + yOtherMomentumModule) / 2 * yv */
     })
+  return particle
+}
+const interateWithOtherParticleByAxis = (particle, otherParticle, axis) => {
+//  console.log(axis, Math.abs(particle.momentum[axis]), Math.abs(otherParticle.momentum[axis]), particle, otherParticle )
+  let curretDirection = particle.momentum[axis] < 0 ? -1 : 1
+  let inversionDirection = particle.coordenates[axis] < otherParticle.coordenates[axis] ? -1 : 1
+  //console.log ( curretDirection, inversionDirection, particle.momentum[axis] )
+  if ( curretDirection == inversionDirection )
+    return particle 
+  particle.momentum[axis] = (Math.abs(particle.momentum[axis]) + Math.abs(otherParticle.momentum[axis])) / 2 * inversionDirection
   return particle
 }
 
@@ -146,11 +157,11 @@ const initializerParticles = () => {
   })
   doTranslates(translates);
   particles.forEach( particle => {
-    particle.node = createParticleNode(particle.nodeId, particle.coordenates)
+    particle.node = createParticleNode(particle.nodeId, particle.coordenates, particle.nodeClasses)
   })
   return particles
 }
 const init = () => {
-  ciclo( initializerParticles() )
+  return ciclo( initializerParticles() )
 }
-init()
+init() 
