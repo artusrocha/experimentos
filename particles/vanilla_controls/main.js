@@ -34,20 +34,19 @@ const createRandomParticleData = () => {
 }
 
 const takeSnapshot = (particles) => {
-  const snapshot = {}
-  particles.forEach( particle =>{
+  control.snapshot = {}
+  for ( let index=0; index<particles.length; index++) {
     for( let xRadius of [-2, -1, 0, 1, 2] )
       for( let yRadius of [-2, -1, 0, 1, 2] ) {
-        const coord = {
-          x: Math.round(particle.coordenates.x) + xRadius,
-          y: Math.round(particle.coordenates.y) + yRadius
-        }
-        snapshot[ coord.x ] = snapshot[ coord.x ] || {}
-        snapshot[ coord.x ][ coord.y ] = snapshot[ coord.x ][ coord.y ] || []
-        snapshot[ coord.x ][ coord.y ].push( particle )
+        let coordX = Math.round(particles[index].coordenates.x) + xRadius,
+            coordY = Math.round(particles[index].coordenates.y) + yRadius
+
+        control.snapshot[ coordX ] = control.snapshot[ coordX ] || {}
+        control.snapshot[ coordX ][ coordY ] = control.snapshot[ coordX ][ coordY ] || []
+        control.snapshot[ coordX ][ coordY ].push( index )
       }
-  })
-  return snapshot
+  }
+  //return snapshot
 }
 
 const createParticleNode = (id, coordenates, classes) => {
@@ -96,39 +95,37 @@ const calcParticleMove = (particle) => {
 
 const ciclo = (particles) => {
   if ( control.pauseAll ) {
-    setTimeout( function(){ ciclo(particles) }, 1000)
+    setTimeout( function(){ ciclo(particles) }, 500)
     return particles;
   }
 
   control.loopCount++
-  //let allParticlesSnapshot = takeSnapshot(particles)
 
   particles = particles.map( particle => {
     particle = interateWithBorderByAxis(particle, 'x')
     return interateWithBorderByAxis(particle, 'y')
   })
 
-  let allParticlesSnapshot = takeSnapshot( particles.map( particle => calcParticleMove(particle) ) )
-
-  particles = particles.map( particle => interateWithOtherParticles(particle, allParticlesSnapshot) )
+  takeSnapshot( particles )
+  particles = particles.map( particle => interateWithOtherParticles(particle, particles ) )
   .map( particle => calcParticleMove(particle) )
 
-  if ( !control.pauseRender && (control.render || control.loopCount == 4) ) {
+  if ( !control.pauseRender && (control.render || control.loopCount == 8) ) {
     let translates = particles.map(particle => moveParticleCssProps(particle))
     doTranslates( translates )
     control.render = false
     control.loopCount = 0
   }
-  setTimeout( function(){ ciclo(particles) }, 8)
+  setTimeout( function(){ ciclo(particles) }, 1)
   return particles;
 }
 
-const interateWithOtherParticles = (particle, particlesSnapshot) => {
-  particlesSnapshot[ Math.round(particle.coordenates.x) ][ Math.round(particle.coordenates.y) ]
-    .filter( eachParticle => eachParticle.nodeId != particle.nodeId )
-    .forEach( otherParticle => {
-      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'x')
-      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'y')
+const interateWithOtherParticles = (particle, particles) => {
+  control.snapshot[ Math.round(particle.coordenates.x) ][ Math.round(particle.coordenates.y) ]
+    .filter( index => particles[index].nodeId != particle.nodeId )
+    .forEach( index => {
+      particle = interateWithOtherParticleByAxis(particle, particles[index], 'x')
+      particle = interateWithOtherParticleByAxis(particle, particles[index], 'y')
     })
   return particle
 }
@@ -139,6 +136,7 @@ const interateWithOtherParticleByAxis = (particle, otherParticle, axis) => {
   if ( curretDirection == directionAfterInterate )
     return particle 
   particle.momentum[axis] = (Math.abs(particle.momentum[axis]) + Math.abs(otherParticle.momentum[axis])) / 2 * directionAfterInterate
+  control.render = true
   return particle
 }
 

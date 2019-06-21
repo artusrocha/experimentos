@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang='en-us'>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Particles elastic interaction</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style id="translates"></style>
+
+    <script defer="true" src="main.js"></script>
+    <script src="https://unpkg.com/apprun@latest/dist/apprun-html.js"></script>
+  </head>
+
+  <body>
+    <div id="controls"></div>
+    <script>
+      const state = {
+        count: 0,
+        pauseAll: false 
+      }
+      const view = state => {
+        return `<div>
+          <!--
+          <h1>${state.count}</h1>
+          <button onclick='app.run("-1")'>-1</button>
+          <button onclick='app.run("+1")'>+1</button>
+          -->
+          <button onclick='app.run("pause")'>${state.pauseAll ? "Paused" : "Pause"}</button>
+        </div>`;
+      };
+      const update = {
+        '+1': state => { state.count++; return state},
+        '-1': state => { state.count--; return state},
+        'pause': state => {
+            state.pauseAll = !state.pauseAll
+            control.pauseAll = state.pauseAll
+            return state
+          }
+      };
+      app.start('controls', state, view, update);
+    </script>
+
+    <div id="container">
+    </div>
+
+  </body>
+</html>
