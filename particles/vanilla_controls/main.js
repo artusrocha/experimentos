@@ -15,7 +15,7 @@ const control = {
     }
   }
 }
-const containerNode = document.getElementById('container')
+const containerNode = document.getElementById('particle-container')
 const translatesStyleNode = document.getElementById('translates')
 
 const createRandomParticleData = () => {

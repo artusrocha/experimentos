@@ -2,7 +2,10 @@
 <html lang='en-us'>
   <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Particles elastic interaction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <link rel="stylesheet" href="vendors/css/bulmaswatch.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <style id="translates"></style>
 
@@ -11,7 +14,7 @@
   </head>
 
   <body>
-    <div id="controls"></div>
+    <nav id="controls" class="navbar has-shadow is-spaced"></nav>
     <script>
       const state = {
         count: 0,
@@ -39,8 +42,8 @@
       app.start('controls', state, view, update);
     </script>
 
-    <div id="container">
+    <div class="container">
+      <div id="particle-container"></div>
     </div>
-
   </body>
 </html>
