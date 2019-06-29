@@ -18,7 +18,7 @@ const control = {
     }
   },
   particles: [],
-  containerNode: document.getElementById('container'),
+  containerNode: document.getElementById('particle-container'),
   translatesStyleNode: document.getElementById('translates')
 }
 
