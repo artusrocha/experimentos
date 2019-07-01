@@ -57,7 +57,7 @@ class Simulator {
   }
 
   cycle () {
-    if ( this.control.pauseAll ) {
+    if ( this.control.global.pauseAll ) {
       setTimeout( () => { this.cycle() }, 500)
       return;
     }

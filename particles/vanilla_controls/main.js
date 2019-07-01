@@ -1,29 +1,63 @@
 import { Simulator } from './simulator.js';
 import { Render } from './render.js';
 
-const control = {
+const newGlobalControl = () => ({
   render: false,
   pauseAll: false,
-  pauseRender: false,
-  loopCount: 0,
-  limits: {
-    particles: 50,
-    container: {
-      x: 500,
-      y: 500
+  pauseRender: false
+})
+
+const defaultSimControl = (global) => {
+  return  {
+    global: global,
+    loopCount: 0,
+    limits: {
+      particles: 50,
+      container: {
+        x: 500,
+        y: 500
+      },
+      speed: {
+        x: 1,
+        y: 1
+      }
     },
-    speed: {
-      x: 1,
-      y: 1
-    }
-  },
-  particles: [],
-  containerNode: document.getElementById('particle-container'),
-  translatesStyleNode: document.getElementById('translates')
+    particles: []
+  }
+}
+
+const newSimControl = (index, control, globalWrapper) => {
+  let where = createWrapperNode(`wrapper-${index}`, globalWrapper)
+  control.containerNode = createContainerNode(`particle-container-${index}`, where),
+  control.translatesStyleNode = createTranslateNode(`translates-${index}`, where)
+  return control
+}
+
+const createWrapperNode = (id, where) => {
+  let node = document.createElement("div")
+  node.classList.add("session");
+  node.id = id
+  where.appendChild( node )
+  return node
+}
+
+const createContainerNode = (id, where) => {
+  let node = document.createElement("div")
+  node.classList.add("particle-container");
+  node.id = id
+  where.appendChild( node )
+  return node
+}
+
+const createTranslateNode = (id, where) => {
+  let node = document.createElement("style")
+  node.id = id
+  where.appendChild( node )
+  return node
 }
 
 class Main {
-  constructor(){
+  constructor(control){
     this.control = control
     this.render = new Render(control)
     this.simulator = new Simulator(control)
@@ -51,12 +85,6 @@ class Main {
   }
 }
 
-const main = new Main(control).init()
-
-const state = {
-  count: 0,
-  pauseAll: false 
-}
 const view = state => {
   return `<div>
     <!--
@@ -66,14 +94,26 @@ const view = state => {
     -->
     <button onclick='app.run("pause")'>${state.pauseAll ? "Paused" : "Pause"}</button>
   </div>`;
-};
+}
+
 const update = {
   '+1': state => { state.count++; return state},
   '-1': state => { state.count--; return state},
   'pause': state => {
       state.pauseAll = !state.pauseAll
-      control.pauseAll = state.pauseAll
+      state.globalControl.pauseAll = state.pauseAll
       return state
     }
-};
+}
+
+const state = {
+  count: 0,
+  pauseAll: false,
+  simulations: [],
+  globalControl: newGlobalControl()
+}
+const globalWrapper = document.getElementById("global-wrapper")
+state.simulations.push( newSimControl( 0, defaultSimControl(state.globalControl), globalWrapper ) )
+const main = new Main(state.simulations[0]).init()
+
 app.start('controls', state, view, update);

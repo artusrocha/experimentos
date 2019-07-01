@@ -27,7 +27,7 @@ class Render {
   }
 
   cycle () {
-    if ( this.control.pauseAll || this.control.pauseRender ) {
+    if ( this.control.global.pauseAll || this.control.global.pauseRender ) {
       setTimeout( () => { this.cycle() }, 500)
       return;
     }
@@ -38,7 +38,7 @@ class Render {
 //      this.control.render = false
 //      this.control.loopCount = 0
 //    }
-    setTimeout( () => { this.cycle() }, 8)
+    setTimeout( () => { this.cycle() }, 10)
   }
 }
 export { Render }
