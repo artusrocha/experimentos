@@ -1,7 +1,8 @@
-#container {
+.particle-container {
+ display:block;
  width:500px;
  height:500px;
- margin: auto;
+ margin: 30px auto;
  box-shadow: 0px 0px 0px 1px #999;
  padding: 0px;
 }

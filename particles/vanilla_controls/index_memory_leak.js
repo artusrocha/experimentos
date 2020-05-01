@@ -34,19 +34,18 @@ const createRandomParticleData = () => {
 }
 
 const takeSnapshot = (particles) => {
-  const snapshot = {}
-  particles.forEach( particle =>{
+  let snapshot = {} // <- memory leak
+  for ( let index=0; index<particles.length; index++) {
     for( let xRadius of [-2, -1, 0, 1, 2] )
       for( let yRadius of [-2, -1, 0, 1, 2] ) {
-        const coord = {
-          x: Math.round(particle.coordenates.x) + xRadius,
-          y: Math.round(particle.coordenates.y) + yRadius
-        }
-        snapshot[ coord.x ] = snapshot[ coord.x ] || {}
-        snapshot[ coord.x ][ coord.y ] = snapshot[ coord.x ][ coord.y ] || []
-        snapshot[ coord.x ][ coord.y ].push( particle )
+        let coordX = Math.round(particles[index].coordenates.x) + xRadius,
+            coordY = Math.round(particles[index].coordenates.y) + yRadius
+
+        snapshot[ coordX ] = snapshot[ coordX ] || {}
+        snapshot[ coordX ][ coordY ] = snapshot[ coordX ][ coordY ] || []
+        snapshot[ coordX ][ coordY ].push( index )
       }
-  })
+  }
   return snapshot
 }
 
@@ -101,16 +100,15 @@ const ciclo = (particles) => {
   }
 
   control.loopCount++
-  //let allParticlesSnapshot = takeSnapshot(particles)
 
   particles = particles.map( particle => {
     particle = interateWithBorderByAxis(particle, 'x')
     return interateWithBorderByAxis(particle, 'y')
   })
 
-  let allParticlesSnapshot = takeSnapshot( particles.map( particle => calcParticleMove(particle) ) )
+  let allParticlesSnapshot = takeSnapshot( particles )
 
-  particles = particles.map( particle => interateWithOtherParticles(particle, allParticlesSnapshot) )
+  particles = particles.map( particle => interateWithOtherParticles(particle, particles, allParticlesSnapshot) )
   .map( particle => calcParticleMove(particle) )
 
   if ( !control.pauseRender && (control.render || control.loopCount == 4) ) {
@@ -123,12 +121,12 @@ const ciclo = (particles) => {
   return particles;
 }
 
-const interateWithOtherParticles = (particle, particlesSnapshot) => {
+const interateWithOtherParticles = (particle, particles, particlesSnapshot) => {
   particlesSnapshot[ Math.round(particle.coordenates.x) ][ Math.round(particle.coordenates.y) ]
-    .filter( eachParticle => eachParticle.nodeId != particle.nodeId )
-    .forEach( otherParticle => {
-      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'x')
-      particle = interateWithOtherParticleByAxis(particle, otherParticle, 'y')
+    .filter( index => particles[index].nodeId != particle.nodeId )
+    .forEach( index => {
+      particle = interateWithOtherParticleByAxis(particle, particles[index], 'x')
+      particle = interateWithOtherParticleByAxis(particle, particles[index], 'y')
     })
   return particle
 }
@@ -153,7 +151,7 @@ const initializerParticles = () => {
   })
   doTranslates(translates);
   particles.forEach( particle => {
-    particle.node = createParticleNode(particle.nodeId, particle.coordenates, particle.nodeClasses)
+    createParticleNode(particle.nodeId, particle.coordenates, particle.nodeClasses)
   })
   return particles
 }
