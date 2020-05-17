@@ -1,8 +1,0 @@
-
-spring:
-  rabbitmq:
-    username: guest
-    password: guest
-    host: localhost
-
-server: 8080
